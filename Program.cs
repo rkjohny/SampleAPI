@@ -1,0 +1,55 @@
+using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Pkix;
+using SampleAPI.Interceptors;
+using SampleAPI.Middlewares;
+using SampleAPI.Repository;
+using SampleAPI.Services;
+using StackExchange.Redis;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+
+
+// TODO: warning To protect potentially sensitive information in your connection string, 
+// you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 
+// for guidance on storing connection strings.
+builder.Services.AddDbContext<PersonRepositoryInMemory>(options => options.UseInMemoryDatabase("PersonList"));
+builder.Services.AddDbContext<PersonRepositoryPgSql>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PgSql")));
+builder.Services.AddDbContext<PersonRepositoryMySql>(options => options.UseMySQL(builder.Configuration.GetConnectionString("MySql") ?? string.Empty));
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(options => ConnectionMultiplexer.Connect(("127.0.0.1:6379")));
+
+builder.Services.AddScoped<PersonRepositoryRedis>();
+builder.Services.AddScoped<PersonService>();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
+builder.Services.AddExceptionHandler<ApiNotFoundExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.UseMiddleware<RequestEntryPointHandler>();
+app.UseExceptionHandler();
+
+app.Run();
