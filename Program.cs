@@ -1,12 +1,20 @@
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Pkix;
 using SampleAPI.Interceptors;
 using SampleAPI.Middlewares;
 using SampleAPI.Repository;
 using SampleAPI.Services;
+using Serilog;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add logging provider
+var logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
 
 // Add services to the container.
 
@@ -20,7 +28,7 @@ builder.Services.AddDbContext<PersonRepositoryInMemory>(options => options.UseIn
 builder.Services.AddDbContext<PersonRepositoryPgSql>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PgSql")));
 builder.Services.AddDbContext<PersonRepositoryMySql>(options => options.UseMySQL(builder.Configuration.GetConnectionString("MySql") ?? string.Empty));
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(options => ConnectionMultiplexer.Connect(("127.0.0.1:6379")));
+builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(("127.0.0.1:6379")));
 
 builder.Services.AddScoped<PersonRepositoryRedis>();
 builder.Services.AddScoped<PersonService>();
