@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using SampleAPI.Middlewares;
 using SampleAPI.Repository;
 using SampleAPI.Services;

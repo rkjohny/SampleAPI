@@ -8,18 +8,18 @@ namespace SampleAPI.Repository;
 public class PersonRepositoryRedis(IConnectionMultiplexer redis)
 {
     private static int _id = 0;
-    private const string LogicalTable = "Person:";
+    private const string LogicalTable = "Person";
 
     public IDatabase RedisDb { get; } = redis.GetDatabase();
 
-    public async Task<Person> AddIfNotExistsAsync(Person person)
+    public async Task<PersonDto> AddIfNotExistsAsync(Person person)
     {
-        var key = LogicalTable + person.Email;
+        var key = LogicalTable + ":" + person.Email;
         var personInDb = RedisDb.StringGet(key);
 
         if (!personInDb.IsNullOrEmpty)
         {
-            return await Deserialize(personInDb!);
+            return new PersonDto(await Deserialize(personInDb!));
         }
         
         person.Id = ++_id;
@@ -30,7 +30,7 @@ public class PersonRepositoryRedis(IConnectionMultiplexer redis)
         
         var personJson = await Serialize(person);
         RedisDb.StringSet(key, personJson);
-        return person;
+        return new PersonDto(person);
     }
 
     private static async Task<Person> Deserialize(string person)

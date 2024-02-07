@@ -8,8 +8,8 @@ namespace SampleAPI.Repository;
 public class PersonRepositoryMySql(DbContextOptions<PersonRepositoryMySql> options)
     : AbstractPersonRepository<PersonRepositoryMySql>(options)
 {
-    public override async Task<Person> AddIfNotExistsAsync(Person person)
+    public async Task<PersonDto> AddIfNotExistsAsync(Person person)
     {
-        return await base.AddIfNotExistsAsync(person);
+        return await base.AddIfNotExistsAsync(DbType.MySql, person);
     }
 }

@@ -15,7 +15,7 @@ public class PersonService(PersonRepositoryInMemory repositoryInMemory, PersonRe
             Email = input.Email,
         };
         var addedPerson = await repositoryInMemory.AddIfNotExistsAsync(person);
-        return new PersonDto(addedPerson);
+        return addedPerson;
     }
 
     public async Task<PersonDto> AddPersonPgSqlAsync(AddPersonInput input)
@@ -28,7 +28,7 @@ public class PersonService(PersonRepositoryInMemory repositoryInMemory, PersonRe
         };
         
         var addedPerson = await repositoryPgSql.AddIfNotExistsAsync(person);
-        return new PersonDto(addedPerson);
+        return addedPerson;
     }
     
     public async Task<PersonDto> AddPersonMySqlAsync(AddPersonInput input)
@@ -40,7 +40,7 @@ public class PersonService(PersonRepositoryInMemory repositoryInMemory, PersonRe
             Email = input.Email,
         };
         var addedPerson = await repositoryMySql.AddIfNotExistsAsync(person);
-        return new PersonDto(addedPerson);
+        return addedPerson;
     }
 
 
@@ -53,6 +53,6 @@ public class PersonService(PersonRepositoryInMemory repositoryInMemory, PersonRe
             Email = input.Email
         };
         var addedPerson = await repositoryRedis.AddIfNotExistsAsync(person);
-        return new PersonDto(addedPerson);
+        return addedPerson;
     }
 }

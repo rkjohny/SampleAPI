@@ -2,17 +2,39 @@
 
 namespace SampleAPI.Types;
 
-public class PersonDto(Person person)
+public class PersonDto
 {
+    public PersonDto(Person person)
+    {
+        Id = person.Id;
+        FirstName = person.FirstName;
+        LastName = person.LastName;
+        Email = person.Email;
+        CreatedAt = person.CreatedAt;
+        LastUpdatedAt = person.LastUpdatedAt;
+        SyncVersion = person.SyncVersion;
+    }
+
+    public PersonDto(PersonDto personDto)
+    {
+        Id = personDto.Id;
+        FirstName = personDto.FirstName;
+        LastName = personDto.LastName;
+        Email = personDto.Email;
+        CreatedAt = personDto.CreatedAt;
+        LastUpdatedAt = personDto.LastUpdatedAt;
+        SyncVersion = personDto.SyncVersion;
+    }
+
     // TODO: Do not send plain id in response, return an encoded value (say as string) so that it can be decoded (when it is received in a request)
-    public long Id { get; set; } = person.Id;
+    public long Id { get; set; }
         
-    public string FirstName { get; set; } = person.FirstName;
-    public string? LastName { get; set; } = person.LastName;
-    public string Email { get; set; } = person.Email;
+    public string FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string Email { get; set; }
 
-    public DateTime CreatedAt { get; set; } = person.CreatedAt;
-    public DateTime LastUpdatedAt { get; set; } = person.LastUpdatedAt;
+    public DateTime CreatedAt { get; set; }
+    public DateTime LastUpdatedAt { get; set; }
 
-    public long SyncVersion { get; set; } = person.SyncVersion;
+    public long SyncVersion { get; set; }
 }
