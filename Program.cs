@@ -4,6 +4,7 @@ using SampleAPI.Repository;
 using SampleAPI.Services;
 using Serilog;
 using StackExchange.Redis;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,13 +16,22 @@ var logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
+// Configure thread pool
+ThreadPool.GetMinThreads(out int minWorkerThreads, out int minIoThreads);
+ThreadPool.GetMaxThreads(out int maxWorkerThreads, out int maxIoThreads);
+
+var threadPoolSettings = builder.Configuration.GetSection("ThreadPoolSettings");
+int minThreads = threadPoolSettings.GetValue<int>("MinThreads");
+int maxThreads = threadPoolSettings.GetValue<int>("MaxThreads");
+int minThreadsIo = threadPoolSettings.GetValue<int>("MinIoThreads");
+int maxThreadsIo = threadPoolSettings.GetValue<int>("MaxIoThreads");
+
+ThreadPool.SetMinThreads(minThreads, minThreadsIo);
+ThreadPool.SetMaxThreads(maxThreads, maxThreadsIo);
+
+
 // Add services to the container.
-
-// TODO: for distributed system use a distributed caching (as second layer caching of EF) like Redis, MemCache, HazelCast etc.
-//builder.Services.AddMemoryCache();
-
 builder.Services.AddControllers();
-
 
 // TODO: warning To protect potentially sensitive information in your connection string, 
 // you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 
@@ -29,20 +39,14 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<PersonRepositoryInMemory>(options =>
 {
     options.UseInMemoryDatabase("PersonList");
-    //options.UseMemoryCache(new MemoryCache(new MemoryCacheOptions()));
 });
 builder.Services.AddDbContext<PersonRepositoryPgSql>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("PgSql"));
-    // using default MemoryCacheOptions
-    //options.UseMemoryCache(new MemoryCache(new MemoryCacheOptions()));
-    
 });
 builder.Services.AddDbContext<PersonRepositoryMySql>(options =>
 {
     options.UseMySQL(builder.Configuration.GetConnectionString("MySql") ?? string.Empty);
-    // using default MemoryCacheOptions
-    //options.UseMemoryCache(new MemoryCache(new MemoryCacheOptions()));
 });
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(("127.0.0.1:6379")));
