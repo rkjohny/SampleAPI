@@ -21,6 +21,8 @@ namespace SampleAPI.Migrations
                     first_name = table.Column<string>(type: "character varying(35)", maxLength: 35, nullable: false),
                     last_name = table.Column<string>(type: "character varying(35)", maxLength: 35, nullable: true),
                     email = table.Column<string>(type: "character varying(70)", maxLength: 70, nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", nullable: false),
+                    sync_version = table.Column<long>(type: "bigint", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     last_updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },

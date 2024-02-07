@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using SampleAPI.Interceptors;
 using SampleAPI.Middlewares;
 using SampleAPI.Repository;
 using SampleAPI.Services;

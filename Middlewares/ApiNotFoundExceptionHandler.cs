@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SampleAPI.Interceptors
+namespace SampleAPI.Middlewares
 {
     internal sealed class ApiNotFoundExceptionHandler(ILogger<ApiNotFoundExceptionHandler> logger) : IExceptionHandler
     {
@@ -10,12 +10,13 @@ namespace SampleAPI.Interceptors
             Exception exception,
             CancellationToken cancellationToken)
         {
-            if (exception is not EntryPointNotFoundException  notFoundException)
+            if (exception is not EntryPointNotFoundException notFoundException)
             {
                 return false;
             }
 
-            logger.LogError(exception, "Exception occurred: {StackTrace}", exception.StackTrace);
+            logger.LogError("Exception occurred:");
+            logger.LogError(exception, "{StackTrace}", exception.StackTrace);
 
             var problemDetails = new ProblemDetails
             {

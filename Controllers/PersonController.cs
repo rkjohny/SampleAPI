@@ -38,6 +38,6 @@ public class PersonController(PersonService service) : ControllerBase
     [HttpPost("redis/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonRedis(AddPersonInput input)
     {
-        return new ActionResult<AddPersonOutput>(await service.AddPersonRedis(input));
+        return new ActionResult<AddPersonOutput>(await service.AddPersonRedisAsync(input));
     }
 }

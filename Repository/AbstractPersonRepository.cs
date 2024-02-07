@@ -14,7 +14,7 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
     }
  
     
-    public async Task<Person> AddIfNotExists(Person person)
+    public async Task<Person> AddIfNotExistsAsync(Person person)
     {
         var personInDb = await Items.FirstOrDefaultAsync(p => p.Email == person.Email);
 

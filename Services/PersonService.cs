@@ -14,7 +14,7 @@ public class PersonService(PersonRepositoryInMemory repositoryInMemory, PersonRe
             LastName = input.LastName,
             Email = input.Email,
         };
-        var addedPerson = await repositoryInMemory.AddIfNotExists(person);
+        var addedPerson = await repositoryInMemory.AddIfNotExistsAsync(person);
         return new AddPersonOutput(addedPerson);
     }
 
@@ -24,9 +24,10 @@ public class PersonService(PersonRepositoryInMemory repositoryInMemory, PersonRe
         {
             FirstName = input.FirstName,
             LastName = input.LastName,
-            Email = input.Email,
+            Email = input.Email
         };
-        var addedPerson = await repositoryPgSql.AddIfNotExists(person);
+        
+        var addedPerson = await repositoryPgSql.AddIfNotExistsAsync(person);
         return new AddPersonOutput(addedPerson);
     }
     
@@ -38,20 +39,20 @@ public class PersonService(PersonRepositoryInMemory repositoryInMemory, PersonRe
             LastName = input.LastName,
             Email = input.Email,
         };
-        var addedPerson = await repositoryMySql.AddIfNotExists(person);
+        var addedPerson = await repositoryMySql.AddIfNotExistsAsync(person);
         return new AddPersonOutput(addedPerson);
     }
 
 
-    public Task<AddPersonOutput> AddPersonRedis(AddPersonInput input)
+    public async Task<AddPersonOutput> AddPersonRedisAsync(AddPersonInput input)
     {
         var person = new Person
         {
             FirstName = input.FirstName,
             LastName = input.LastName,
-            Email = input.Email,
+            Email = input.Email
         };
-        var addedPerson = repositoryRedis.AddIfNotExists(person);
-        return Task.FromResult(new AddPersonOutput(addedPerson!));
+        var addedPerson = await repositoryRedis.AddIfNotExistsAsync(person);
+        return new AddPersonOutput(addedPerson);
     }
 }

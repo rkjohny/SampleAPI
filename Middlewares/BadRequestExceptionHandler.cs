@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SampleAPI.Interceptors;
+namespace SampleAPI.Middlewares;
 
 internal sealed class BadRequestExceptionHandler(ILogger<BadRequestExceptionHandler> logger) : IExceptionHandler
-{ 
+{
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
         Exception exception,
@@ -15,7 +15,8 @@ internal sealed class BadRequestExceptionHandler(ILogger<BadRequestExceptionHand
             return false;
         }
 
-        logger.LogError(exception, "Exception occurred: {StackTrace}", exception.StackTrace);
+        logger.LogError("Exception occurred:");
+        logger.LogError(exception, "{StackTrace}", exception.StackTrace);
 
         var problemDetails = new ProblemDetails
         {

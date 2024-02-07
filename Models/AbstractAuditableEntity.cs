@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace SampleAPI.Models;
 
 [Index(nameof(CreatedAt)), Index(nameof(LastUpdatedAt))]
-public class AbstractAuditableEntity : AbstractEntity
+public class AbstractAuditableEntity : AbstractSyncableEntity
 {
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }

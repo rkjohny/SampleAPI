@@ -3,8 +3,7 @@ using SampleAPI.Models;
 
 namespace SampleAPI.Repository;
 
-
-public abstract class AbstractAuditableEntityRepository<TC, TM>(DbContextOptions<TC> options) : AbstractSyncableEntiyRepository<TC, TM>(options) where TM : class where TC : DbContext
+public class AbstractSyncableEntiyRepository<TC, TM>(DbContextOptions<TC> options) : AbstractEntityRepository<TC, TM>(options) where TM : class where TC : DbContext
 {
     public override int SaveChanges()
     {
@@ -13,11 +12,10 @@ public abstract class AbstractAuditableEntityRepository<TC, TM>(DbContextOptions
             switch (entry.State)
             {
                 case EntityState.Added:
-                    ((AbstractAuditableEntity)entry.Entity).CreatedAt = DateTime.UtcNow;
-                    ((AbstractAuditableEntity)entry.Entity).LastUpdatedAt = DateTime.UtcNow;
+                    ((AbstractSyncableEntity)entry.Entity).SyncVersion = DateTime.UtcNow.ToFileTime();
                     break;
                 case EntityState.Modified:
-                    ((AbstractAuditableEntity)entry.Entity).LastUpdatedAt = DateTime.UtcNow;
+                    ((AbstractSyncableEntity)entry.Entity).SyncVersion = DateTime.UtcNow.ToFileTime();
                     break;
             }
         }
@@ -31,14 +29,14 @@ public abstract class AbstractAuditableEntityRepository<TC, TM>(DbContextOptions
             switch (entry.State)
             {
                 case EntityState.Added:
-                    ((AbstractAuditableEntity)entry.Entity).CreatedAt = DateTime.UtcNow;
-                    ((AbstractAuditableEntity)entry.Entity).LastUpdatedAt = DateTime.UtcNow;
+                    ((AbstractSyncableEntity)entry.Entity).SyncVersion = DateTime.UtcNow.ToFileTime();
                     break;
                 case EntityState.Modified:
-                    ((AbstractAuditableEntity)entry.Entity).LastUpdatedAt = DateTime.UtcNow;
+                    ((AbstractSyncableEntity)entry.Entity).SyncVersion = DateTime.UtcNow.ToFileTime();
                     break;
             }
         }
         return base.SaveChangesAsync(cancellationToken);
     }
+
 }

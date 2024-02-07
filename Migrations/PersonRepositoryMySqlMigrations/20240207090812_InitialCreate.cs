@@ -24,6 +24,8 @@ namespace SampleAPI.Migrations.PersonRepositoryMySqlMigrations
                     first_name = table.Column<string>(type: "varchar(35)", maxLength: 35, nullable: false),
                     last_name = table.Column<string>(type: "varchar(35)", maxLength: 35, nullable: true),
                     email = table.Column<string>(type: "varchar(70)", maxLength: 70, nullable: false),
+                    row_version = table.Column<byte[]>(type: "longblob", nullable: false),
+                    sync_version = table.Column<long>(type: "bigint", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     last_updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },

@@ -56,6 +56,16 @@ namespace SampleAPI.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_updated_at");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
+
+                    b.Property<long>("SyncVersion")
+                        .HasColumnType("bigint")
+                        .HasColumnName("sync_version");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt");
