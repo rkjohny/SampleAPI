@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using SampleAPI.Middlewares;
 using SampleAPI.Repository;
 using SampleAPI.Services;
@@ -17,15 +18,33 @@ builder.Logging.AddSerilog(logger);
 
 // Add services to the container.
 
+// TODO: for distributed system use a distributed caching (as second layer caching of EF) like Redis, MemCache, HazelCast etc.
+//builder.Services.AddMemoryCache();
+
 builder.Services.AddControllers();
 
 
 // TODO: warning To protect potentially sensitive information in your connection string, 
 // you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 
 // for guidance on storing connection strings.
-builder.Services.AddDbContext<PersonRepositoryInMemory>(options => options.UseInMemoryDatabase("PersonList"));
-builder.Services.AddDbContext<PersonRepositoryPgSql>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PgSql")));
-builder.Services.AddDbContext<PersonRepositoryMySql>(options => options.UseMySQL(builder.Configuration.GetConnectionString("MySql") ?? string.Empty));
+builder.Services.AddDbContext<PersonRepositoryInMemory>(options =>
+{
+    options.UseInMemoryDatabase("PersonList");
+    //options.UseMemoryCache(new MemoryCache(new MemoryCacheOptions()));
+});
+builder.Services.AddDbContext<PersonRepositoryPgSql>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PgSql"));
+    // using default MemoryCacheOptions
+    //options.UseMemoryCache(new MemoryCache(new MemoryCacheOptions()));
+    
+});
+builder.Services.AddDbContext<PersonRepositoryMySql>(options =>
+{
+    options.UseMySQL(builder.Configuration.GetConnectionString("MySql") ?? string.Empty);
+    // using default MemoryCacheOptions
+    //options.UseMemoryCache(new MemoryCache(new MemoryCacheOptions()));
+});
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(("127.0.0.1:6379")));
 

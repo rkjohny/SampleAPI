@@ -1,6 +1,7 @@
 ﻿using SampleAPI.Models;
 using StackExchange.Redis;
 using System.Text.Json;
+using SampleAPI.Types;
 
 namespace SampleAPI.Repository;
 
@@ -13,7 +14,8 @@ public class PersonRepositoryRedis(IConnectionMultiplexer redis)
 
     public async Task<Person> AddIfNotExistsAsync(Person person)
     {
-        var personInDb = RedisDb.StringGet(LogicalTable + person.Email);
+        var key = LogicalTable + person.Email;
+        var personInDb = RedisDb.StringGet(key);
 
         if (!personInDb.IsNullOrEmpty)
         {
@@ -27,7 +29,7 @@ public class PersonRepositoryRedis(IConnectionMultiplexer redis)
         person.RowVersion = Guid.NewGuid().ToByteArray();
         
         var personJson = await Serialize(person);
-        RedisDb.StringSet(LogicalTable + person.Email, personJson);
+        RedisDb.StringSet(key, personJson);
         return person;
     }
 

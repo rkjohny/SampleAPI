@@ -13,7 +13,9 @@ public class PersonController(PersonService service) : ControllerBase
     [HttpPost("in-memory/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonInMemory(AddPersonInput input)
     {
-        return new ActionResult<AddPersonOutput>(await service.AddPersonInMemoryAsync(input));
+        PersonDto personDto = await service.AddPersonInMemoryAsync(input);
+        AddPersonOutput output = new AddPersonOutput(personDto);
+        return new ActionResult<AddPersonOutput>(output);
     }
     
     // POST: api/Person/pg-sql/add-person
@@ -21,7 +23,9 @@ public class PersonController(PersonService service) : ControllerBase
     [HttpPost("pg-sql/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonPgSql(AddPersonInput input)
     {
-        return new ActionResult<AddPersonOutput>(await service.AddPersonPgSqlAsync(input));
+        PersonDto personDto = await service.AddPersonPgSqlAsync(input);
+        AddPersonOutput output = new AddPersonOutput(personDto);
+        return new ActionResult<AddPersonOutput>(output);
     }
 
 
@@ -30,7 +34,9 @@ public class PersonController(PersonService service) : ControllerBase
     [HttpPost("my-sql/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonMySql(AddPersonInput input)
     {
-        return new ActionResult<AddPersonOutput>(await service.AddPersonMySqlAsync(input));
+        PersonDto personDto = await service.AddPersonMySqlAsync(input);
+        AddPersonOutput output = new AddPersonOutput(personDto);
+        return new ActionResult<AddPersonOutput>(output);
     }
 
     // POST: api/Person/my-sql/add-person
@@ -38,6 +44,8 @@ public class PersonController(PersonService service) : ControllerBase
     [HttpPost("redis/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonRedis(AddPersonInput input)
     {
-        return new ActionResult<AddPersonOutput>(await service.AddPersonRedisAsync(input));
+        PersonDto personDto = await service.AddPersonRedisAsync(input);
+        AddPersonOutput output = new AddPersonOutput(personDto);
+        return new ActionResult<AddPersonOutput>(output);
     }
 }

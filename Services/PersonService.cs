@@ -6,7 +6,7 @@ namespace SampleAPI.Services;
 
 public class PersonService(PersonRepositoryInMemory repositoryInMemory, PersonRepositoryPgSql repositoryPgSql, PersonRepositoryMySql repositoryMySql, PersonRepositoryRedis repositoryRedis)
 {
-    public async Task<AddPersonOutput> AddPersonInMemoryAsync(AddPersonInput input)
+    public async Task<PersonDto> AddPersonInMemoryAsync(AddPersonInput input)
     {
         var person = new Person
         {
@@ -15,10 +15,10 @@ public class PersonService(PersonRepositoryInMemory repositoryInMemory, PersonRe
             Email = input.Email,
         };
         var addedPerson = await repositoryInMemory.AddIfNotExistsAsync(person);
-        return new AddPersonOutput(addedPerson);
+        return new PersonDto(addedPerson);
     }
 
-    public async Task<AddPersonOutput> AddPersonPgSqlAsync(AddPersonInput input)
+    public async Task<PersonDto> AddPersonPgSqlAsync(AddPersonInput input)
     {
         var person = new Person
         {
@@ -28,10 +28,10 @@ public class PersonService(PersonRepositoryInMemory repositoryInMemory, PersonRe
         };
         
         var addedPerson = await repositoryPgSql.AddIfNotExistsAsync(person);
-        return new AddPersonOutput(addedPerson);
+        return new PersonDto(addedPerson);
     }
     
-    public async Task<AddPersonOutput> AddPersonMySqlAsync(AddPersonInput input)
+    public async Task<PersonDto> AddPersonMySqlAsync(AddPersonInput input)
     {
         var person = new Person
         {
@@ -40,11 +40,11 @@ public class PersonService(PersonRepositoryInMemory repositoryInMemory, PersonRe
             Email = input.Email,
         };
         var addedPerson = await repositoryMySql.AddIfNotExistsAsync(person);
-        return new AddPersonOutput(addedPerson);
+        return new PersonDto(addedPerson);
     }
 
 
-    public async Task<AddPersonOutput> AddPersonRedisAsync(AddPersonInput input)
+    public async Task<PersonDto> AddPersonRedisAsync(AddPersonInput input)
     {
         var person = new Person
         {
@@ -53,6 +53,6 @@ public class PersonService(PersonRepositoryInMemory repositoryInMemory, PersonRe
             Email = input.Email
         };
         var addedPerson = await repositoryRedis.AddIfNotExistsAsync(person);
-        return new AddPersonOutput(addedPerson);
+        return new PersonDto(addedPerson);
     }
 }
