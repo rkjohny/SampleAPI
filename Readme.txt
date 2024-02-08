@@ -3,7 +3,9 @@ Update "appsettings.json" file as necessary
 In file "appsettings.json" update the connection string for both MySql and PgSql
 In file "Program.cs" in method "ConnectionMultiplexer.Connect" update the Redis connection parameter
 
-Edit file "docker-compose.yaml" for redis docker if necessary
+Run the docker server
+
+If using Redis Docker, edit file "docker-compose.yaml" for redis docker if necessary
 
 In "Package manager Console" run the following commaned:
 
