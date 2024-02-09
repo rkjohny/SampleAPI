@@ -20,10 +20,12 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
     
     public async Task<PersonDto> AddIfNotExistsAsync(DbType dbType, Person person)
     {
+        // TODO: data will be inserted in cache only for new request, previously existing data will not be inserted in cache
         PersonCacheService cacheService = new PersonCacheService();
+
+        string key = dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email;
         
         // First look into cache if found return
-        string key = dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email;
         var personInCache = cacheService.GetData<PersonDto>(key);
         if (personInCache != null)
         {
@@ -40,8 +42,8 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
         
         // Finally add into cache
         PersonDto newPersonInCache = new PersonDto(personInDb ?? person);
-        // it will expire after 5 minutes
-        var expirationTime = DateTimeOffset.Now.AddMinutes(5.0);
+        // it will expire after 10 hours
+        var expirationTime = DateTimeOffset.Now.AddMinutes(600);
         cacheService.SetData(key, newPersonInCache, expirationTime);
         return newPersonInCache;
     }

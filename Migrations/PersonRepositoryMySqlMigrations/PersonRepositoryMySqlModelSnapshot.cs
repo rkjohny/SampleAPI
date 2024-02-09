@@ -51,10 +51,9 @@ namespace SampleAPI.Migrations.PersonRepositoryMySqlMigrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("last_updated_at");
 
-                    b.Property<byte[]>("RowVersion")
+                    b.Property<long>("RowVersion")
                         .IsConcurrencyToken()
-                        .IsRequired()
-                        .HasColumnType("longblob")
+                        .HasColumnType("bigint")
                         .HasColumnName("row_version");
 
                     b.Property<long>("SyncVersion")

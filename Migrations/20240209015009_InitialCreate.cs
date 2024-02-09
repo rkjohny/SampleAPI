@@ -1,10 +1,10 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using MySql.EntityFrameworkCore.Metadata;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace SampleAPI.Migrations.PersonRepositoryMySqlMigrations
+namespace SampleAPI.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -12,28 +12,24 @@ namespace SampleAPI.Migrations.PersonRepositoryMySqlMigrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterDatabase()
-                .Annotation("MySQL:Charset", "utf8mb4");
-
             migrationBuilder.CreateTable(
                 name: "Person",
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    first_name = table.Column<string>(type: "varchar(35)", maxLength: 35, nullable: false),
-                    last_name = table.Column<string>(type: "varchar(35)", maxLength: 35, nullable: true),
-                    email = table.Column<string>(type: "varchar(70)", maxLength: 70, nullable: false),
-                    row_version = table.Column<byte[]>(type: "longblob", nullable: false),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    first_name = table.Column<string>(type: "character varying(35)", maxLength: 35, nullable: false),
+                    last_name = table.Column<string>(type: "character varying(35)", maxLength: 35, nullable: true),
+                    email = table.Column<string>(type: "character varying(70)", maxLength: 70, nullable: false),
+                    row_version = table.Column<long>(type: "bigint", nullable: false),
                     sync_version = table.Column<long>(type: "bigint", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    last_updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    last_updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Person", x => x.id);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Person_created_at",

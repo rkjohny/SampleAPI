@@ -11,5 +11,5 @@ public abstract class AbstractEntity
 
     [Column("row_version")]
     [ConcurrencyCheck]
-    public byte[] RowVersion { get; set; } = null!;
+    public long RowVersion { get; set; }
 }

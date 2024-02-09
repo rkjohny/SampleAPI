@@ -40,10 +40,10 @@ public abstract class AbstractEntityRepository<TC, TM>(DbContextOptions<TC> opti
             switch (entry.State)
             {
                 case EntityState.Added:
-                    ((AbstractEntity)entry.Entity).RowVersion = Guid.NewGuid().ToByteArray();
+                    ((AbstractEntity)entry.Entity).RowVersion = DateTime.UtcNow.ToFileTime();
                     break;
                 case EntityState.Modified:
-                    ((AbstractEntity)entry.Entity).RowVersion = Guid.NewGuid().ToByteArray();
+                    ((AbstractEntity)entry.Entity).RowVersion = DateTime.UtcNow.ToFileTime();
                     break;
             }
         }
@@ -57,10 +57,10 @@ public abstract class AbstractEntityRepository<TC, TM>(DbContextOptions<TC> opti
             switch (entry.State)
             {
                 case EntityState.Added:
-                    ((AbstractEntity)entry.Entity).RowVersion = Guid.NewGuid().ToByteArray();
+                    ((AbstractEntity)entry.Entity).RowVersion = DateTime.UtcNow.ToFileTime();
                     break;
                 case EntityState.Modified:
-                    ((AbstractEntity)entry.Entity).RowVersion = Guid.NewGuid().ToByteArray();
+                    ((AbstractEntity)entry.Entity).RowVersion = DateTime.UtcNow.ToFileTime();
                     break;
             }
         }

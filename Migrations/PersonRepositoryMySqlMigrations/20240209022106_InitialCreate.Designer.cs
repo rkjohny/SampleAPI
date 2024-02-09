@@ -4,15 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SampleAPI.Repository;
 
 #nullable disable
 
-namespace SampleAPI.Migrations
+namespace SampleAPI.Migrations.PersonRepositoryMySqlMigrations
 {
-    [DbContext(typeof(PersonRepositoryPgSql))]
-    [Migration("20240208022256_InitialCreate")]
+    [DbContext(typeof(PersonRepositoryMySql))]
+    [Migration("20240209022106_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -21,9 +20,7 @@ namespace SampleAPI.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.1")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("SampleAPI.Models.Person", b =>
                 {
@@ -32,37 +29,34 @@ namespace SampleAPI.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("created_at");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(70)
-                        .HasColumnType("character varying(70)")
+                        .HasColumnType("varchar(70)")
                         .HasColumnName("email");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(35)
-                        .HasColumnType("character varying(35)")
+                        .HasColumnType("varchar(35)")
                         .HasColumnName("first_name");
 
                     b.Property<string>("LastName")
                         .HasMaxLength(35)
-                        .HasColumnType("character varying(35)")
+                        .HasColumnType("varchar(35)")
                         .HasColumnName("last_name");
 
                     b.Property<DateTime>("LastUpdatedAt")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("last_updated_at");
 
-                    b.Property<byte[]>("RowVersion")
+                    b.Property<long>("RowVersion")
                         .IsConcurrencyToken()
-                        .IsRequired()
-                        .HasColumnType("bytea")
+                        .HasColumnType("bigint")
                         .HasColumnName("row_version");
 
                     b.Property<long>("SyncVersion")

@@ -26,7 +26,7 @@ public class PersonRepositoryRedis(IConnectionMultiplexer redis)
         person.CreatedAt = DateTime.Now;
         person.LastUpdatedAt = DateTime.Now;
         person.SyncVersion = DateTime.UtcNow.ToFileTime();
-        person.RowVersion = Guid.NewGuid().ToByteArray();
+        person.RowVersion = DateTime.UtcNow.ToFileTime();
         
         var personJson = await Serialize(person);
         RedisDb.StringSet(key, personJson);
