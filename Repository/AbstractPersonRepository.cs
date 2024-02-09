@@ -23,10 +23,10 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
         // TODO: data will be inserted in cache only for new request, previously existing data will not be inserted in cache
         PersonCacheService cacheService = new PersonCacheService();
 
-        string key = dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email;
+        string cacheKey = dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email;
         
         // First look into cache if found return
-        var personInCache = cacheService.GetData<PersonDto>(key);
+        var personInCache = cacheService.GetData<PersonDto>(cacheKey);
         if (personInCache != null)
         {
             return personInCache;
@@ -42,9 +42,9 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
         
         // Finally add into cache
         PersonDto newPersonInCache = new PersonDto(personInDb ?? person);
-        // it will expire after 10 hours
+        // TODO: set expiration to a valid value. (for now consider 10 hours as infinity)
         var expirationTime = DateTimeOffset.Now.AddMinutes(600);
-        cacheService.SetData(key, newPersonInCache, expirationTime);
+        cacheService.SetData(cacheKey, newPersonInCache, expirationTime);
         return newPersonInCache;
     }
 }

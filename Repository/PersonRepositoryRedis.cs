@@ -2,6 +2,8 @@
 using StackExchange.Redis;
 using System.Text.Json;
 using SampleAPI.Types;
+using SampleAPI.Core;
+using System.Data;
 
 namespace SampleAPI.Repository;
 
@@ -14,23 +16,40 @@ public class PersonRepositoryRedis(IConnectionMultiplexer redis)
 
     public async Task<PersonDto> AddIfNotExistsAsync(Person person)
     {
-        var key = LogicalTable + ":" + person.Email;
-        var personInDb = RedisDb.StringGet(key);
+        // TODO: data will be inserted in cache only for new request, previously existing data will not be inserted in cache
+        PersonCacheService cacheService = new PersonCacheService();
 
-        if (!personInDb.IsNullOrEmpty)
+        string cacheKey = "Redis" + ":" + LogicalTable + ":" + person.Email;
+
+        var redisKey = LogicalTable + ":" + person.Email;
+
+        // First look into cache if found return
+        var personInCache = cacheService.GetData<PersonDto>(cacheKey);
+        if (personInCache != null)
         {
-            return new PersonDto(await Deserialize(personInDb!));
+            return personInCache;
         }
-        
+
         person.Id = ++_id;
         person.CreatedAt = DateTime.Now;
         person.LastUpdatedAt = DateTime.Now;
         person.SyncVersion = DateTime.UtcNow.ToFileTime();
         person.RowVersion = DateTime.UtcNow.ToFileTime();
         
-        var personJson = await Serialize(person);
-        RedisDb.StringSet(key, personJson);
-        return new PersonDto(person);
+        // Then look into redis database, if not found, add into database
+        var personInDb = RedisDb.StringGet(redisKey);
+        if (!personInDb.IsNullOrEmpty)
+        {
+            var personJson = await Serialize(person);
+            RedisDb.StringSet(redisKey, personJson);
+            //return new PersonDto(await Deserialize(personInDb!));
+        }
+
+        PersonDto newPersonInCache = new PersonDto(person);
+        // TODO: set expiration to a valid value. (for now consider 10 hours as infinity)
+        var expirationTime = DateTimeOffset.Now.AddMinutes(600);
+        cacheService.SetData(cacheKey, newPersonInCache, expirationTime);
+        return newPersonInCache;
     }
 
     private static async Task<Person> Deserialize(string person)
