@@ -1,5 +1,4 @@
-﻿using System.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SampleAPI.Models;
 using SampleAPI.Types;
 using DbType = SampleAPI.Types.DbType;

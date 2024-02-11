@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Extensions;
 using SampleAPI.Core;
 using SampleAPI.Models;
 using SampleAPI.Types;
+using DbType = SampleAPI.Types.DbType;
 
 namespace SampleAPI.Repository;
 
@@ -20,7 +21,6 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
     
     public async Task<PersonDto> AddIfNotExistsAsync(DbType dbType, Person person)
     {
-        // TODO: need to insert previously existing data into cache (data will be inserted in cache only for new request) 
         PersonCacheService cacheService = new PersonCacheService();
 
         string cacheKey = dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email;
@@ -46,5 +46,21 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
         var expirationTime = DateTimeOffset.Now.AddMinutes(600);
         cacheService.SetData(cacheKey, newPersonInCache, expirationTime);
         return newPersonInCache;
+    }
+
+    public Task LoadDataIntoCache(DbType dbType)
+    {
+        PersonCacheService cacheService = new PersonCacheService();
+
+        foreach (var person in Items)
+        {
+            string cacheKey = dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email;
+            PersonDto newPersonInCache = new PersonDto(person);
+            // TODO: set expiration to a valid value. (for now consider 10 hours as infinity)
+            var expirationTime = DateTimeOffset.Now.AddMinutes(600);
+            cacheService.SetData(cacheKey, newPersonInCache, expirationTime);
+        }
+
+        return Task.CompletedTask;
     }
 }

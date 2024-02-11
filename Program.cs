@@ -4,7 +4,7 @@ using SampleAPI.Repository;
 using SampleAPI.Services;
 using Serilog;
 using StackExchange.Redis;
-using System.Configuration;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +62,10 @@ builder.Services.AddProblemDetails();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSingleton<PrepareCacheHostedService>();
+//builder.Services.AddHostedService<PrepareCacheHostedService>(implementationFactory: x => x.GetService<PrepareCacheHostedService>() ?? throw new InvalidOperationException());
+builder.Services.AddHostedService<PrepareCacheHostedService>();
 
 var app = builder.Build();
 
