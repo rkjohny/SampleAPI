@@ -20,7 +20,7 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
     
     public async Task<PersonDto> AddIfNotExistsAsync(DbType dbType, Person person)
     {
-        // TODO: data will be inserted in cache only for new request, previously existing data will not be inserted in cache
+        // TODO: need to insert previously existing data into cache (data will be inserted in cache only for new request) 
         PersonCacheService cacheService = new PersonCacheService();
 
         string cacheKey = dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email;
