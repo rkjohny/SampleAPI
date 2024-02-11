@@ -10,6 +10,8 @@ namespace SampleAPI.Repository;
 public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
     : AbstractAuditableEntityRepository<TC, Person>(options) where TC : DbContext
 {
+    private static readonly Mutex MutexDb = new();
+        
     private const string LogicalTable = "Person";
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -21,9 +23,9 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
     
     public async Task<PersonDto> AddIfNotExistsAsync(DbType dbType, Person person)
     {
-        PersonCacheService cacheService = new PersonCacheService();
+        var cacheService = new PersonCacheService();
 
-        string cacheKey = dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email;
+        var cacheKey = dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email;
         
         // First look into cache if found return
         var personInCache = cacheService.GetData<PersonDto>(cacheKey);
@@ -31,20 +33,34 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
         {
             return personInCache;
         }
-        
-        // Then look into database, if not found, add into database
-        var personInDb = Items.FirstOrDefault(p => p.Email == person.Email);
-        if (personInDb == null)
+
+        // Then look into database if not exists insert
+        Person? personInDb = null;
+        await Task.Factory.StartNew(() =>
         {
-            Items.Add(person);
-            await SaveChangesAsync();
-        }
-        
+            try
+            {
+                MutexDb.WaitOne();
+                personInDb = Items.FirstOrDefault(p => p.Email == person.Email);
+                if (personInDb == null)
+                {
+                    Items.Add(person);
+                    SaveChanges();
+                }
+            }
+            finally
+            {
+                MutexDb.ReleaseMutex();
+            }
+        });
+
+
         // Finally add into cache
-        PersonDto newPersonInCache = new PersonDto(personInDb ?? person);
+        var newPersonInCache = new PersonDto(personInDb ?? person);
         // TODO: set expiration to a valid value. (for now consider 10 hours as infinity)
         var expirationTime = DateTimeOffset.Now.AddMinutes(600);
         cacheService.SetData(cacheKey, newPersonInCache, expirationTime);
+
         return newPersonInCache;
     }
 
