@@ -69,6 +69,9 @@ builder.Services.AddSingleton<PrepareCacheHostedService>();
 //builder.Services.AddHostedService<PrepareCacheHostedService>(implementationFactory: x => x.GetService<PrepareCacheHostedService>() ?? throw new InvalidOperationException());
 builder.Services.AddHostedService<PrepareCacheHostedService>();
 
+builder.Services.AddSingleton<ICacheService, PersonCacheService>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

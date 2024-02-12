@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SampleAPI.Core;
 using SampleAPI.Models;
 using SampleAPI.Types;
 
 
 namespace SampleAPI.Repository;
 
-public class PersonRepositoryMySql(DbContextOptions<PersonRepositoryMySql> options)
-    : AbstractPersonRepository<PersonRepositoryMySql>(options)
+public class PersonRepositoryMySql(DbContextOptions<PersonRepositoryMySql> options, ICacheService cacheService)
+    : AbstractPersonRepository<PersonRepositoryMySql>(options, cacheService)
 {
     public async Task<PersonDto> AddIfNotExistsAsync(Person person)
     {

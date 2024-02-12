@@ -3,11 +3,11 @@ using StackExchange.Redis;
 using System.Text.Json;
 using SampleAPI.Types;
 using SampleAPI.Core;
-using System.Data;
+
 
 namespace SampleAPI.Repository;
 
-public class PersonRepositoryRedis(IConnectionMultiplexer redis)
+public class PersonRepositoryRedis(IConnectionMultiplexer redis, ICacheService cacheService)
 {
     private static int _id = 0;
     private const string LogicalTable = "Person";
@@ -16,9 +16,6 @@ public class PersonRepositoryRedis(IConnectionMultiplexer redis)
 
     public async Task<PersonDto> AddIfNotExistsAsync(Person person)
     {
-        // TODO: data will be inserted in cache only for new request, previously existing data will not be inserted in cache
-        PersonCacheService cacheService = new PersonCacheService();
-
         string cacheKey = "Redis" + ":" + LogicalTable + ":" + person.Email;
 
         var redisKey = LogicalTable + ":" + person.Email;

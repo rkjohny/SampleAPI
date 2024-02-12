@@ -7,7 +7,7 @@ using DbType = SampleAPI.Types.DbType;
 
 namespace SampleAPI.Repository;
 
-public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
+public class AbstractPersonRepository<TC>(DbContextOptions<TC> options, ICacheService cacheService)
     : AbstractAuditableEntityRepository<TC, Person>(options) where TC : DbContext
 {
     private static readonly Mutex MutexDb = new (false, typeof(TC).Name);
@@ -23,8 +23,6 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
     
     public async Task<PersonDto> AddIfNotExistsAsync(DbType dbType, Person person)
     {
-        var cacheService = new PersonCacheService();
-
         var cacheKey = dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email;
         
         // First look into cache if found return
@@ -78,8 +76,6 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
 
     public Task LoadDataIntoCache(DbType dbType)
     {
-        PersonCacheService cacheService = new PersonCacheService();
-
         foreach (var person in Items)
         {
             string cacheKey = dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email;

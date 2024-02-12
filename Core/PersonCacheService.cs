@@ -2,7 +2,6 @@
 
 namespace SampleAPI.Core;
 
-// TODO: Register in DI as SingleTon 
 public class PersonCacheService : ICacheService
 {
     // TODO: use caching as second layer caching of EF
