@@ -4,7 +4,7 @@ using SampleAPI.Types;
 
 namespace SampleAPI.Core
 {
-    public class AddPersonHelper(PersonService personService) : AbstractHelper
+    public class AddPersonHelper(PersonService personService, ILogger<AddPersonHelper> logger) : AbstractHelper(logger)
     {
         protected override void ValidateInput(AbstractInput input)
         {

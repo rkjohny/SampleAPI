@@ -6,7 +6,7 @@ namespace SampleAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PersonController(AddPersonHelper addPersonHelper) : ControllerBase
+public class PersonController(AddPersonHelper addPersonHelper, ILogger<PersonController> logger) : ControllerBase
 {
     // POST: api/Person/in-memory/add-person
     // TODO: To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
