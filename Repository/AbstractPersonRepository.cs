@@ -10,7 +10,7 @@ namespace SampleAPI.Repository;
 public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
     : AbstractAuditableEntityRepository<TC, Person>(options) where TC : DbContext
 {
-    private static readonly Mutex MutexDb = new();
+    private static readonly Mutex MutexDb = new (false, typeof(TC).Name);
         
     private const string LogicalTable = "Person";
     
@@ -36,25 +36,37 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options)
 
         // Then look into database if not exists insert
         Person? personInDb = null;
+        bool locAcquired = false;
         await Task.Factory.StartNew(() =>
         {
             try
             {
-                MutexDb.WaitOne();
-                personInDb = Items.FirstOrDefault(p => p.Email == person.Email);
-                if (personInDb == null)
+                locAcquired = MutexDb.WaitOne();
+                if (locAcquired)
                 {
-                    Items.Add(person);
-                    SaveChanges();
+                    personInDb = Items.FirstOrDefault(p => p.Email == person.Email);
+                    if (personInDb == null)
+                    {
+                        Items.Add(person);
+                        SaveChanges();
+                    }
                 }
             }
             finally
             {
-                MutexDb.ReleaseMutex();
+                if (locAcquired)
+                {
+                    MutexDb.ReleaseMutex();
+                }
             }
         });
 
 
+        if (!locAcquired)
+        {
+            throw new Exception("Could not perform database operation, error in acquiring lock for DB operation");
+        }
+        
         // Finally add into cache
         var newPersonInCache = new PersonDto(personInDb ?? person);
         // TODO: set expiration to a valid value. (for now consider 10 hours as infinity)
