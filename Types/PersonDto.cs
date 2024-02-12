@@ -26,7 +26,6 @@ public class PersonDto
         SyncVersion = personDto.SyncVersion;
     }
 
-    // TODO: Do not send plain id in response, return an encoded value (say as string) so that it can be decoded (when it is received in a request)
     public long Id { get; set; }
         
     public string FirstName { get; set; }
