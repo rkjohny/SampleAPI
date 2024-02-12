@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SampleAPI.Core;
 using SampleAPI.Middlewares;
 using SampleAPI.Repository;
 using SampleAPI.Services;
@@ -53,6 +54,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer
 
 builder.Services.AddScoped<PersonRepositoryRedis>();
 builder.Services.AddScoped<PersonService>();
+builder.Services.AddScoped<AddPersonHelper>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
