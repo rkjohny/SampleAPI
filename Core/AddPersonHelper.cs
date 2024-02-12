@@ -1,4 +1,5 @@
-﻿using SampleAPI.Models;
+﻿using System.ComponentModel;
+using SampleAPI.Models;
 using SampleAPI.Services;
 using SampleAPI.Types;
 
@@ -18,12 +19,12 @@ namespace SampleAPI.Core
         {
             if (input is not AddPersonInput addPersonInput)
             {
-                throw new InvalidOperationException("Invalid argument in AddPersonHelper, expected AddPersonInput");
+                throw new InvalidEnumArgumentException("Invalid argument in AddPersonHelper, expected AddPersonInput");
             }
 
             if (args is not DbType dbType)
             {
-                throw new InvalidOperationException("Invalid argument in AddPersonHelper, expected DbType");
+                throw new InvalidEnumArgumentException("Invalid argument in AddPersonHelper, expected DbType");
             }
             
             var person = new Person
@@ -39,7 +40,7 @@ namespace SampleAPI.Core
                 DbType.PgSql => await personService.AddPersonPgSqlAsync(person),
                 DbType.MySql => await personService.AddPersonMySqlAsync(person),
                 DbType.Redis => await personService.AddPersonRedisAsync(person),
-                _ => throw new InvalidOperationException("Invalid database type.")
+                _ => throw new InvalidEnumArgumentException("Invalid database type.")
             };
             return new AddPersonOutput(addedPerson);
         }
