@@ -2,21 +2,21 @@
 
 namespace SampleAPI.Core;
 
-public abstract class AbstractHelper(ILogger<AddPersonHelper> logger)
+public abstract class AbstractHelper(IConfiguration configuration, ILogger<AddPersonHelper> logger)
 {
-    protected abstract void ValidateInput(AbstractInput input);
+    protected abstract void ValidateInput(AbstractInput input, object? args);
 
-    protected abstract void CheckPermission(AbstractInput input);
+    protected abstract void CheckPermission(AbstractInput input, object? args);
 
-    protected abstract Task<AbstractOutput> ExecuteAsync(AbstractInput input, object? args);
+    protected abstract Task<AbstractOutput> ExecuteHelperAsync(AbstractInput input, object? args);
 
-    public async Task<AbstractOutput> ExecuteHelperAsync(AbstractInput input, object? args)
+    public async Task<AbstractOutput> ExecuteAsync(AbstractInput input, object? args)
     {
         try
         {
-            ValidateInput(input);
-            CheckPermission(input);
-            return await ExecuteAsync(input, args);
+            CheckPermission(input, args);
+            ValidateInput(input, args);
+            return await ExecuteHelperAsync(input, args);
         }
         catch (Exception ex)
         {

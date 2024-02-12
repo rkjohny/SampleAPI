@@ -5,17 +5,17 @@ using SampleAPI.Types;
 
 namespace SampleAPI.Core;
 
-public class AddPersonHelper(PersonService personService, ILogger<AddPersonHelper> logger) : AbstractHelper(logger)
+public class AddPersonHelper(IConfiguration configuration, ILogger<AddPersonHelper> logger, PersonService personService) : AbstractHelper(configuration, logger)
 {
-    protected override void ValidateInput(AbstractInput input)
+    protected override void ValidateInput(AbstractInput input, object? args)
     {
     }
 
-    protected override void CheckPermission(AbstractInput input)
+    protected override void CheckPermission(AbstractInput input, object? args)
     {
     }
 
-    protected override async Task<AbstractOutput> ExecuteAsync(AbstractInput input, object? args)
+    protected override async Task<AbstractOutput> ExecuteHelperAsync(AbstractInput input, object? args)
     {
         if (input is not AddPersonInput addPersonInput)
         {
