@@ -71,6 +71,7 @@ builder.Services.AddHostedService<PrepareCacheHostedService>();
 
 builder.Services.AddSingleton<ICacheService, PersonCacheService>();
 
+builder.Services.AddScoped<Api>();
 
 var app = builder.Build();
 

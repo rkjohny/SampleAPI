@@ -2,7 +2,7 @@
 
 namespace SampleAPI.Core;
 
-public abstract class AbstractHelper(IConfiguration configuration, ILogger<AddPersonHelper> logger)
+public abstract class AbstractHelper(ILogger<AddPersonHelper> logger)
 {
     protected abstract void ValidateInput(AbstractInput input, object? args);
 

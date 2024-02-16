@@ -4,7 +4,7 @@ using SampleAPI.Types;
 
 namespace SampleAPI.Services;
 
-public class PersonService(IConfiguration configuration, ILogger<PersonService> logger, PersonRepositoryInMemory repositoryInMemory, PersonRepositoryPgSql repositoryPgSql, PersonRepositoryMySql repositoryMySql, PersonRepositoryRedis repositoryRedis)
+public class PersonService(PersonRepositoryInMemory repositoryInMemory, PersonRepositoryPgSql repositoryPgSql, PersonRepositoryMySql repositoryMySql, PersonRepositoryRedis repositoryRedis)
 {
     public async Task<PersonDto> AddPersonInMemoryAsync(Person person)
     {

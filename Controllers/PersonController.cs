@@ -6,14 +6,14 @@ namespace SampleAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PersonController(IConfiguration configuration, ILogger<PersonController> logger, AddPersonHelper addPersonHelper) : ControllerBase
+public class PersonController(Api api) : ControllerBase
 {
     // POST: api/Person/in-memory/add-person
     // TODO: To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost("in-memory/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonInMemory(AddPersonInput input)
     {
-        var output = await addPersonHelper.ExecuteAsync(input, DbType.InMemory); 
+        var output = await api.AddPersonAsync(input, DbType.InMemory); 
         return new ActionResult<AddPersonOutput>((AddPersonOutput)output);
     }
     
@@ -22,7 +22,7 @@ public class PersonController(IConfiguration configuration, ILogger<PersonContro
     [HttpPost("pg-sql/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonPgSql(AddPersonInput input)
     {
-        var output = await addPersonHelper.ExecuteAsync(input, DbType.PgSql);
+        var output = await api.AddPersonAsync(input, DbType.PgSql);
         return new ActionResult<AddPersonOutput>((AddPersonOutput)output);
     }
 
@@ -32,7 +32,7 @@ public class PersonController(IConfiguration configuration, ILogger<PersonContro
     [HttpPost("my-sql/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonMySql(AddPersonInput input)
     {
-        var output = await addPersonHelper.ExecuteAsync(input, DbType.MySql);
+        var output = await api.AddPersonAsync(input, DbType.MySql);
         return new ActionResult<AddPersonOutput>((AddPersonOutput)output);
     }
 
@@ -41,7 +41,7 @@ public class PersonController(IConfiguration configuration, ILogger<PersonContro
     [HttpPost("redis/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonRedis(AddPersonInput input)
     {
-        var output = await addPersonHelper.ExecuteAsync(input, DbType.Redis);
+        var output = await api.AddPersonAsync(input, DbType.Redis);
         return new ActionResult<AddPersonOutput>((AddPersonOutput)output);
     }
 }
