@@ -9,7 +9,6 @@ namespace SampleAPI.Controllers;
 public class PersonController(Api api) : ControllerBase
 {
     // POST: api/Person/in-memory/add-person
-    // TODO: To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost("in-memory/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonInMemory(AddPersonInput input)
     {
@@ -18,7 +17,6 @@ public class PersonController(Api api) : ControllerBase
     }
     
     // POST: api/Person/pg-sql/add-person
-    // TODO: To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost("pg-sql/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonPgSql(AddPersonInput input)
     {
@@ -28,7 +26,6 @@ public class PersonController(Api api) : ControllerBase
 
 
     // POST: api/Person/my-sql/add-person
-    // TODO: To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost("my-sql/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonMySql(AddPersonInput input)
     {
@@ -37,7 +34,6 @@ public class PersonController(Api api) : ControllerBase
     }
 
     // POST: api/Person/my-sql/add-person
-    // TODO: To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost("redis/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonRedis(AddPersonInput input)
     {
