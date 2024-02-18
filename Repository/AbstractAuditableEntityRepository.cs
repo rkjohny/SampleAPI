@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Extensions;
 using SampleAPI.Models;
 
 namespace SampleAPI.Repository;
@@ -19,6 +20,12 @@ public abstract class AbstractAuditableEntityRepository<TC, TM>(DbContextOptions
                 case EntityState.Modified:
                     ((AbstractAuditableEntity)entry.Entity).LastUpdatedAt = DateTime.UtcNow;
                     break;
+                case EntityState.Detached:
+                case EntityState.Unchanged:
+                case EntityState.Deleted:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(entry.State.GetDisplayName());
             }
         }
         return base.SaveChanges();
@@ -37,6 +44,12 @@ public abstract class AbstractAuditableEntityRepository<TC, TM>(DbContextOptions
                 case EntityState.Modified:
                     ((AbstractAuditableEntity)entry.Entity).LastUpdatedAt = DateTime.UtcNow;
                     break;
+                case EntityState.Detached:
+                case EntityState.Unchanged:
+                case EntityState.Deleted:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(entry.State.GetDisplayName());
             }
         }
         return base.SaveChangesAsync(cancellationToken);

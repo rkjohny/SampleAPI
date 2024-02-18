@@ -8,11 +8,7 @@ public class PersonCacheService(IMemoryCache memoryCache) : ICacheService
 {
     public T? GetData<T>(string key)
     {
-        if (memoryCache.TryGetValue(key, out T? value))
-        {
-            return value;
-        }
-        return default;
+        return memoryCache.TryGetValue(key, out T? value) ? value : default;
     }
 
     public void SetData<T>(string key, T? value, DateTimeOffset expirationTime)

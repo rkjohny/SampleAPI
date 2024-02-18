@@ -43,8 +43,7 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options, ICacheSe
                 locAcquired = MutexDb.WaitOne();
                 if (locAcquired)
                 {
-                    personInDb = Items.Cacheable(CacheExpirationMode.Sliding, Utils.ExpirationTimeSpan())
-                        .FirstOrDefault(p => p.Email == person.Email);
+                    personInDb = Items.Cacheable(CacheExpirationMode.Sliding, Utils.ExpirationTimeSpan()).FirstOrDefault(p => p.Email == person.Email);
                     if (personInDb == null)
                     {
                         Items.Add(person);

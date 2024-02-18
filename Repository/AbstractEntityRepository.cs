@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Extensions;
 using SampleAPI.Models;
 
 
@@ -37,15 +38,12 @@ public abstract class AbstractEntityRepository<TC, TM>(DbContextOptions<TC> opti
     {
         foreach (var entry in ChangeTracker.Entries())
         {
-            switch (entry.State)
+            ((AbstractEntity)entry.Entity).RowVersion = entry.State switch
             {
-                case EntityState.Added:
-                    ((AbstractEntity)entry.Entity).RowVersion = DateTime.UtcNow.ToFileTime();
-                    break;
-                case EntityState.Modified:
-                    ((AbstractEntity)entry.Entity).RowVersion = DateTime.UtcNow.ToFileTime();
-                    break;
-            }
+                EntityState.Added => DateTime.UtcNow.ToFileTime(),
+                EntityState.Modified => DateTime.UtcNow.ToFileTime(),
+                _ => ((AbstractEntity)entry.Entity).RowVersion
+            };
         }
         return base.SaveChanges();
     }
@@ -54,15 +52,12 @@ public abstract class AbstractEntityRepository<TC, TM>(DbContextOptions<TC> opti
     {
         foreach (var entry in ChangeTracker.Entries())
         {
-            switch (entry.State)
+            ((AbstractEntity)entry.Entity).RowVersion = entry.State switch
             {
-                case EntityState.Added:
-                    ((AbstractEntity)entry.Entity).RowVersion = DateTime.UtcNow.ToFileTime();
-                    break;
-                case EntityState.Modified:
-                    ((AbstractEntity)entry.Entity).RowVersion = DateTime.UtcNow.ToFileTime();
-                    break;
-            }
+                EntityState.Added => DateTime.UtcNow.ToFileTime(),
+                EntityState.Modified => DateTime.UtcNow.ToFileTime(),
+                _ => ((AbstractEntity)entry.Entity).RowVersion
+            };
         }
         return base.SaveChangesAsync(cancellationToken);
     }

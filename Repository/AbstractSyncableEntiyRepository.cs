@@ -9,15 +9,12 @@ public class AbstractSyncableEntiyRepository<TC, TM>(DbContextOptions<TC> option
     {
         foreach (var entry in ChangeTracker.Entries())
         {
-            switch (entry.State)
+            ((AbstractSyncableEntity)entry.Entity).SyncVersion = entry.State switch
             {
-                case EntityState.Added:
-                    ((AbstractSyncableEntity)entry.Entity).SyncVersion = DateTime.UtcNow.ToFileTime();
-                    break;
-                case EntityState.Modified:
-                    ((AbstractSyncableEntity)entry.Entity).SyncVersion = DateTime.UtcNow.ToFileTime();
-                    break;
-            }
+                EntityState.Added => DateTime.UtcNow.ToFileTime(),
+                EntityState.Modified => DateTime.UtcNow.ToFileTime(),
+                _ => ((AbstractSyncableEntity)entry.Entity).SyncVersion
+            };
         }
         return base.SaveChanges();
     }
@@ -26,15 +23,12 @@ public class AbstractSyncableEntiyRepository<TC, TM>(DbContextOptions<TC> option
     {
         foreach (var entry in ChangeTracker.Entries())
         {
-            switch (entry.State)
+            ((AbstractSyncableEntity)entry.Entity).SyncVersion = entry.State switch
             {
-                case EntityState.Added:
-                    ((AbstractSyncableEntity)entry.Entity).SyncVersion = DateTime.UtcNow.ToFileTime();
-                    break;
-                case EntityState.Modified:
-                    ((AbstractSyncableEntity)entry.Entity).SyncVersion = DateTime.UtcNow.ToFileTime();
-                    break;
-            }
+                EntityState.Added => DateTime.UtcNow.ToFileTime(),
+                EntityState.Modified => DateTime.UtcNow.ToFileTime(),
+                _ => ((AbstractSyncableEntity)entry.Entity).SyncVersion
+            };
         }
         return base.SaveChangesAsync(cancellationToken);
     }

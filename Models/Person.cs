@@ -9,11 +9,11 @@ namespace SampleAPI.Models;
 public class Person : AbstractAuditableEntity
 {
     [Column("first_name"), MaxLength(35), MinLength(1)]
-    public string FirstName { get; set; } = null!;
+    public string FirstName { get; init; } = null!;
 
     [Column("last_name"), MaxLength(35)]
-    public string? LastName { get; set; }
+    public string? LastName { get; init; }
 
     [Column("email"), MaxLength(70), MinLength(3)]
-    public string Email { get; set; } = null!;
+    public string Email { get; init; } = null!;
 }
