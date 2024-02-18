@@ -1,20 +1,16 @@
-﻿using System.Runtime.Caching;
+﻿using Microsoft.Extensions.Caching.Memory;
+
 
 namespace SampleAPI.Core;
 
-public class PersonCacheService : ICacheService
+// Using an InMemoryCaching over the Entity Framework 2nd Layer Cache, for not to iterate the whole entity list while adding an entity
+public class PersonCacheService(IMemoryCache memoryCache) : ICacheService
 {
-    // TODO: use caching as second layer caching of EF
-    // TODO: for distributed system use a distributed caching like Redis, MemCache, HazelCast etc.
-    // MemoryCache is thread-safe, but doesn't prevent race condition for Set method
-    // MemoryCache will be used as SingleTon
-    private static readonly ObjectCache MemoryCache = System.Runtime.Caching.MemoryCache.Default;
-
     public T? GetData<T>(string key)
     {
-        if (MemoryCache.Contains(key))
+        if (memoryCache.TryGetValue(key, out T? value))
         {
-            return (T)MemoryCache.Get(key);
+            return value;
         }
         return default;
     }
@@ -23,7 +19,7 @@ public class PersonCacheService : ICacheService
     {
         if (value != null)
         {
-            MemoryCache.Set(key, value, expirationTime);
+            memoryCache.Set(key, value, expirationTime);
         }
     }
 }

@@ -1,3 +1,4 @@
+using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
 using SampleAPI.Core;
 using SampleAPI.Middlewares;
@@ -18,21 +19,28 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
 // Configure thread pool
-ThreadPool.GetMinThreads(out int minWorkerThreads, out int minIoThreads);
-ThreadPool.GetMaxThreads(out int maxWorkerThreads, out int maxIoThreads);
+ThreadPool.GetMinThreads(out var minWorkerThreads, out var minIoThreads);
+ThreadPool.GetMaxThreads(out var maxWorkerThreads, out var maxIoThreads);
 
 var threadPoolSettings = builder.Configuration.GetSection("ThreadPoolSettings");
-int minThreads = threadPoolSettings.GetValue<int>("MinThreads");
-int maxThreads = threadPoolSettings.GetValue<int>("MaxThreads");
-int minThreadsIo = threadPoolSettings.GetValue<int>("MinIoThreads");
-int maxThreadsIo = threadPoolSettings.GetValue<int>("MaxIoThreads");
+var minThreads = threadPoolSettings.GetValue<int>("MinThreads");
+var maxThreads = threadPoolSettings.GetValue<int>("MaxThreads");
+var minThreadsIo = threadPoolSettings.GetValue<int>("MinIoThreads");
+var maxThreadsIo = threadPoolSettings.GetValue<int>("MaxIoThreads");
 
 ThreadPool.SetMinThreads(minThreads, minThreadsIo);
 ThreadPool.SetMaxThreads(maxThreads, maxThreadsIo);
 
-
 // Add services to the container.
 builder.Services.AddControllers();
+
+// Using MemoryCache (builtin MemoryCacheProvider in EFCoreSecondLevelCacheInterceptor) as second layer caching of EF
+// TODO: Use distributed caching as second layer caching of EF
+builder.Services.AddMemoryCache();
+builder.Services.AddEFSecondLevelCache(options =>
+    options.UseMemoryCacheProvider().DisableLogging(true).UseCacheKeyPrefix("SampleAPI_EF_")
+        // Fallback on db if the caching provider fails.
+        .UseDbCallsIfCachingProviderIsDown(TimeSpan.FromMinutes(1)));
 
 // TODO: warning To protect potentially sensitive information in your connection string, 
 // you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 

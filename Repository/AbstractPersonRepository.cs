@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EFCoreSecondLevelCacheInterceptor;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Extensions;
 using SampleAPI.Core;
 using SampleAPI.Models;
@@ -13,17 +14,17 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options, ICacheSe
     private static readonly Mutex MutexDb = new (false, typeof(TC).Name);
         
     private const string LogicalTable = "Person";
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Person>().ToTable("Person");
     }
-    
+
     public async Task<PersonDto> AddIfNotExistsAsync(DbType dbType, Person person)
     {
-        var cacheKey = dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email;
+        var cacheKey = Utils.GetCachedKey(dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email);
         
         // First look into cache if found return
         var personInCache = cacheService.GetData<PersonDto>(cacheKey);
@@ -34,7 +35,7 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options, ICacheSe
 
         // Then look into database if not exists insert
         Person? personInDb = null;
-        bool locAcquired = false;
+        var locAcquired = false;
         await Task.Factory.StartNew(() =>
         {
             try
@@ -42,7 +43,8 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options, ICacheSe
                 locAcquired = MutexDb.WaitOne();
                 if (locAcquired)
                 {
-                    personInDb = Items.FirstOrDefault(p => p.Email == person.Email);
+                    personInDb = Items.Cacheable(CacheExpirationMode.Sliding, Utils.ExpirationTimeSpan())
+                        .FirstOrDefault(p => p.Email == person.Email);
                     if (personInDb == null)
                     {
                         Items.Add(person);
@@ -67,24 +69,21 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options, ICacheSe
         
         // Finally add into cache
         var newPersonInCache = new PersonDto(personInDb ?? person);
-        // TODO: set expiration to a valid value. (for now consider 10 hours as infinity)
-        var expirationTime = DateTimeOffset.Now.AddMinutes(600);
-        cacheService.SetData(cacheKey, newPersonInCache, expirationTime);
+        cacheService.SetData(cacheKey, newPersonInCache, Utils.ExpirationDateTimeOffset());
 
         return newPersonInCache;
     }
 
     public Task LoadDataIntoCache(DbType dbType)
     {
-        foreach (var person in Items)
+        var persons = Items.Cacheable(CacheExpirationMode.Sliding, Utils.ExpirationTimeSpan());
+        // Caching data returned by query
+        foreach (var p in persons)
         {
-            string cacheKey = dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email;
-            PersonDto newPersonInCache = new PersonDto(person);
-            // TODO: set expiration to a valid value. (for now consider 10 hours as infinity)
-            var expirationTime = DateTimeOffset.Now.AddMinutes(600);
-            cacheService.SetData(cacheKey, newPersonInCache, expirationTime);
+            var cacheKey = Utils.GetCachedKey(dbType.GetDisplayName() + ":" + LogicalTable + ":" + p.Email);
+            var newPersonInCache = new PersonDto(p);
+            cacheService.SetData(cacheKey, newPersonInCache, Utils.ExpirationDateTimeOffset());
         }
-
         return Task.CompletedTask;
     }
 }

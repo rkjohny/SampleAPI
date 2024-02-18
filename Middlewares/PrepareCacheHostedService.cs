@@ -10,7 +10,8 @@ public class PrepareCacheHostedService(IServiceProvider serviceProvider) : IHost
     {
         // Create a new scope to retrieve scoped services
         using var scope = serviceProvider.CreateScope();
-            
+        
+        // Initializing the cache with existing data in database
         // Get the DbContext instance
         var pgSqlRepository = scope.ServiceProvider.GetRequiredService<PersonRepositoryPgSql>();
         await pgSqlRepository.LoadDataIntoCache(DbType.PgSql);

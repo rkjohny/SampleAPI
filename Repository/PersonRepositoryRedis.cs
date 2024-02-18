@@ -16,9 +16,9 @@ public class PersonRepositoryRedis(IConnectionMultiplexer redis, ICacheService c
 
     public async Task<PersonDto> AddIfNotExistsAsync(Person person)
     {
-        string cacheKey = "Redis" + ":" + LogicalTable + ":" + person.Email;
+        var cacheKey = Utils.GetCachedKey("Redis" + ":" + LogicalTable + ":" + person.Email);
 
-        var redisKey = LogicalTable + ":" + person.Email;
+        var redisKey = Utils.GetCachedKey(LogicalTable + ":" + person.Email);
 
         // First look into cache if found return
         var personInCache = cacheService.GetData<PersonDto>(cacheKey);
@@ -42,10 +42,8 @@ public class PersonRepositoryRedis(IConnectionMultiplexer redis, ICacheService c
             //return new PersonDto(await Deserialize(personInDb!));
         }
 
-        PersonDto newPersonInCache = new PersonDto(person);
-        // TODO: set expiration to a valid value. (for now consider 10 hours as infinity)
-        var expirationTime = DateTimeOffset.Now.AddMinutes(600);
-        cacheService.SetData(cacheKey, newPersonInCache, expirationTime);
+        var newPersonInCache = new PersonDto(person);
+        cacheService.SetData(cacheKey, newPersonInCache, Utils.ExpirationDateTimeOffset());
         return newPersonInCache;
     }
 
