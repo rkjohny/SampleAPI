@@ -13,6 +13,7 @@ public class AddPersonQueueV2(RedisQueueV2 redisQueue, IServiceProvider serviceP
     {
         var task = new AddPersonRedisTaskV2
         {
+            TrackingId = Guid.NewGuid().ToString(),
             Input = input,
             DbType = dbType
         };
@@ -41,7 +42,7 @@ public class AddPersonQueueV2(RedisQueueV2 redisQueue, IServiceProvider serviceP
             var response = await helper.ExecuteAsync(task.Input, task.DbType);
             var output = (AddPersonOutput)response;
 
-            var outputV2 = new AddPersonOutputV2(output.Person);
+            var outputV2 = new AddPersonOutputV2(task, output.Person);
             await notifier.NotifyOnSuccessAsync(outputV2);
         }
     }

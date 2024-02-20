@@ -12,7 +12,6 @@ public class Api (AddPersonHelper addPersonHelper, AddPersonQueueV2 addPersonQue
 
     public async Task<AddPersonResponseV2> AddPersonV2Async(AddPersonInput input, DbType dbType)
     {
-        var task = await addPersonQueue.Enqueue(input, dbType);
-        return new AddPersonResponseV2();
+        return new AddPersonResponseV2(await addPersonQueue.Enqueue(input, dbType));
     }
 }
