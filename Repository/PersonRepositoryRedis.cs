@@ -37,23 +37,12 @@ public class PersonRepositoryRedis(IConnectionMultiplexer redis, ICacheService c
         var personInDb = RedisDb.StringGet(redisKey);
         if (!personInDb.IsNullOrEmpty)
         {
-            var personJson = await Serialize(person);
+            var personJson = await Utils.Serialize(person);
             RedisDb.StringSet(redisKey, personJson);
-            //return new PersonDto(await Deserialize(personInDb!));
         }
 
         var newPersonInCache = new PersonDto(person);
         cacheService.SetData(cacheKey, newPersonInCache, Utils.ExpirationDateTimeOffset());
         return newPersonInCache;
-    }
-
-    private static async Task<Person> Deserialize(string person)
-    {
-        return  await Task.FromResult(JsonSerializer.Deserialize<Person>(person)!);
-    }
-    
-    private static async Task<string> Serialize(Person person)
-    {
-        return await Task.FromResult(JsonSerializer.Serialize(person));
     }
 }

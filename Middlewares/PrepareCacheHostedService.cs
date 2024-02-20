@@ -1,4 +1,5 @@
-﻿using SampleAPI.Repository;
+﻿using SampleAPI.Core;
+using SampleAPI.Repository;
 using SampleAPI.Types;
 
 namespace SampleAPI.Middlewares;
@@ -18,6 +19,9 @@ public class PrepareCacheHostedService(IServiceProvider serviceProvider) : IHost
 
         var mySqlRepository = scope.ServiceProvider.GetRequiredService<PersonRepositoryMySql>();
         await mySqlRepository.LoadDataIntoCache(DbType.MySql);
+
+        var queue = scope.ServiceProvider.GetRequiredService<AddPersonQueueV2>();
+        queue.Start();
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

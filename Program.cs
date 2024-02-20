@@ -4,6 +4,7 @@ using SampleAPI.Core;
 using SampleAPI.Middlewares;
 using SampleAPI.Repository;
 using SampleAPI.Services;
+using SampleAPI.Types;
 using Serilog;
 using StackExchange.Redis;
 
@@ -74,12 +75,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<PrepareCacheHostedService>();
-//builder.Services.AddHostedService<PrepareCacheHostedService>(implementationFactory: x => x.GetService<PrepareCacheHostedService>() ?? throw new InvalidOperationException());
 builder.Services.AddHostedService<PrepareCacheHostedService>();
 
 builder.Services.AddSingleton<ICacheService, PersonCacheService>();
 
 builder.Services.AddScoped<Api>();
+
+
+builder.Services.AddSingleton<RedisQueueV2>();
+builder.Services.AddSingleton<AddPersonQueueV2>();
+builder.Services.AddSingleton<AddPersonNotifier>();
+
 
 var app = builder.Build();
 

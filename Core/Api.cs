@@ -2,10 +2,17 @@
 
 namespace SampleAPI.Core;
 
-public class Api (AddPersonHelper addPersonHelper)
+public class Api (AddPersonHelper addPersonHelper, AddPersonQueueV2 addPersonQueue)
 {
     public async Task<AbstractOutput> AddPersonAsync(AbstractInput input, DbType dbType)
     {
         return await addPersonHelper.ExecuteAsync(input, dbType);
+    }
+
+
+    public async Task<AddPersonResponseV2> AddPersonV2Async(AddPersonInput input, DbType dbType)
+    {
+        var task = await addPersonQueue.Enqueue(input, dbType);
+        return new AddPersonResponseV2();
     }
 }

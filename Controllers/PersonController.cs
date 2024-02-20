@@ -4,11 +4,11 @@ using SampleAPI.Types;
 
 namespace SampleAPI.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [ApiController]
 public class PersonController(Api api) : ControllerBase
 {
-    // POST: api/Person/in-memory/add-person
+    // POST: api/v1/Person/in-memory/add-person
     [HttpPost("in-memory/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonInMemory(AddPersonInput input)
     {
@@ -16,7 +16,7 @@ public class PersonController(Api api) : ControllerBase
         return new ActionResult<AddPersonOutput>((AddPersonOutput)output);
     }
     
-    // POST: api/Person/pg-sql/add-person
+    // POST: api/v1/Person/pg-sql/add-person
     [HttpPost("pg-sql/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonPgSql(AddPersonInput input)
     {
@@ -25,7 +25,7 @@ public class PersonController(Api api) : ControllerBase
     }
 
 
-    // POST: api/Person/my-sql/add-person
+    // POST: api/v1/Person/my-sql/add-person
     [HttpPost("my-sql/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonMySql(AddPersonInput input)
     {
@@ -33,7 +33,7 @@ public class PersonController(Api api) : ControllerBase
         return new ActionResult<AddPersonOutput>((AddPersonOutput)output);
     }
 
-    // POST: api/Person/my-sql/add-person
+    // POST: api/v1/Person/my-sql/add-person
     [HttpPost("redis/add-person")]
     public async Task<ActionResult<AddPersonOutput>> AddPersonRedis(AddPersonInput input)
     {
