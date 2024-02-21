@@ -1,6 +1,5 @@
 ﻿using SampleAPI.Models;
 using StackExchange.Redis;
-using System.Text.Json;
 using SampleAPI.Types;
 using SampleAPI.Core;
 
