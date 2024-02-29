@@ -47,8 +47,14 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options, ICacheSe
                     if (personInDb == null)
                     {
                         Items.Add(person);
-                        SaveChanges();
                     }
+                    else
+                    {
+                        personInDb.FirstName = person.FirstName;
+                        personInDb.LastName = person.LastName;
+                        Items.Update(personInDb);
+                    }
+                    SaveChanges();
                 }
             }
             finally
