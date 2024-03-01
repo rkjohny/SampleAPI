@@ -26,10 +26,25 @@ public class PersonDto
         SyncVersion = personDto.SyncVersion;
     }
 
+    public bool Equals(Person person)
+    {
+        if (string.IsNullOrEmpty(FirstName) || string.IsNullOrEmpty(LastName) ||
+            string.IsNullOrEmpty(Email))
+            return false;
+
+        if (string.IsNullOrEmpty(person.FirstName) || string.IsNullOrEmpty(person.LastName) ||
+            string.IsNullOrEmpty(person.Email))
+            return false;
+
+        return string.Compare(FirstName, person.FirstName, StringComparison.Ordinal) == 0 &&
+               string.Compare(LastName, person.LastName, StringComparison.Ordinal) == 0 &&
+               string.Compare(Email, person.Email, StringComparison.Ordinal) == 0;
+    }
+
     public long Id { get; set; }
         
     public string FirstName { get; set; }
-    public string? LastName { get; set; }
+    public string LastName { get; set; }
     public string Email { get; set; }
 
     public DateTime CreatedAt { get; set; }

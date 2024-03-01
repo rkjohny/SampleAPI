@@ -12,7 +12,7 @@ using SampleAPI.Repository;
 namespace SampleAPI.Migrations
 {
     [DbContext(typeof(PersonRepositoryPgSql))]
-    [Migration("20240209015009_InitialCreate")]
+    [Migration("20240301135553_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -51,6 +51,7 @@ namespace SampleAPI.Migrations
                         .HasColumnName("first_name");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasMaxLength(35)
                         .HasColumnType("character varying(35)")
                         .HasColumnName("last_name");

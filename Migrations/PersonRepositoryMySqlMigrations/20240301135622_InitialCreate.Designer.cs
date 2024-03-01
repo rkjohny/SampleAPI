@@ -11,7 +11,7 @@ using SampleAPI.Repository;
 namespace SampleAPI.Migrations.PersonRepositoryMySqlMigrations
 {
     [DbContext(typeof(PersonRepositoryMySql))]
-    [Migration("20240209022106_InitialCreate")]
+    [Migration("20240301135622_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -46,6 +46,7 @@ namespace SampleAPI.Migrations.PersonRepositoryMySqlMigrations
                         .HasColumnName("first_name");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasMaxLength(35)
                         .HasColumnType("varchar(35)")
                         .HasColumnName("last_name");

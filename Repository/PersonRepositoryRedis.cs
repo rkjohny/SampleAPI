@@ -22,7 +22,8 @@ public class PersonRepositoryRedis(IConnectionMultiplexer redis, ICacheService c
         var personInCache = cacheService.GetData<PersonDto>(cacheKey);
         if (personInCache != null)
         {
-            return personInCache;
+            if (personInCache.Equals(person))
+                return personInCache;
         }
 
         person.Id = ++_id;

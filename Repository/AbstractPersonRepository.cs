@@ -27,7 +27,8 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options, ICacheSe
         var personInCache = cacheService.GetData<PersonDto>(cacheKey);
         if (personInCache != null)
         {
-            return personInCache;
+            if (personInCache.Equals(person))
+                return personInCache;
         }
 
         // Then look into database if not exists insert
@@ -44,14 +45,18 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options, ICacheSe
                     if (personInDb == null)
                     {
                         Items.Add(person);
+                        SaveChanges();
                     }
                     else
                     {
-                        personInDb.FirstName = person.FirstName;
-                        personInDb.LastName = person.LastName;
-                        Items.Update(personInDb);
+                        if (!personInDb.Equals(person))
+                        {
+                            personInDb.FirstName = person.FirstName;
+                            personInDb.LastName = person.LastName;
+                            Items.Update(personInDb);
+                            SaveChanges();
+                        }
                     }
-                    SaveChanges();
                 }
             }
             finally
