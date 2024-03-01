@@ -1,6 +1,5 @@
 ﻿using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Extensions;
 using SampleAPI.Core;
 using SampleAPI.Models;
 using SampleAPI.Types;
@@ -12,8 +11,6 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options, ICacheSe
     : AbstractAuditableEntityRepository<TC, Person>(options) where TC : DbContext
 {
     private static readonly Mutex MutexDb = new (false, typeof(TC).Name);
-        
-    private const string LogicalTable = "Person";
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,7 +21,7 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options, ICacheSe
 
     public async Task<PersonDto> AddIfNotExistsAsync(DbType dbType, Person person)
     {
-        var cacheKey = Utils.GetCachedKey(dbType.GetDisplayName() + ":" + LogicalTable + ":" + person.Email);
+        var cacheKey = Utils.GetCachedKey(dbType, person.Email);
         
         // First look into cache if found return
         var personInCache = cacheService.GetData<PersonDto>(cacheKey);
@@ -85,7 +82,7 @@ public class AbstractPersonRepository<TC>(DbContextOptions<TC> options, ICacheSe
         // Caching data returned by query
         foreach (var p in persons)
         {
-            var cacheKey = Utils.GetCachedKey(dbType.GetDisplayName() + ":" + LogicalTable + ":" + p.Email);
+            var cacheKey = Utils.GetCachedKey(dbType, p.Email);
             var newPersonInCache = new PersonDto(p);
             cacheService.SetData(cacheKey, newPersonInCache, Utils.ExpirationDateTimeOffset());
         }
